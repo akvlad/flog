@@ -1,6 +1,6 @@
-package main
+package generator
 
-func containString(arr []string, str string) bool {
+func ContainString(arr []string, str string) bool {
 	for _, s := range arr {
 		if s == str {
 			return true

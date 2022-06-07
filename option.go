@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/akvlad/flog/generator"
 	"os"
 	"strconv"
 	"strings"
@@ -48,19 +49,7 @@ Options:
 var validFormats = []string{"apache_common", "apache_combined", "apache_error", "rfc3164", "rfc5424", "common_log", "json"}
 var validTypes = []string{"stdout", "log", "gz"}
 
-// Option defines log generator options
-type Option struct {
-	Format    string
-	Output    string
-	Type      string
-	Number    int
-	Bytes     int
-	Sleep     time.Duration
-	Delay     time.Duration
-	SplitBy   int
-	Overwrite bool
-	Forever   bool
-}
+type Option = generator.Option
 
 func init() {
 	pflag.Usage = printUsage
@@ -96,7 +85,7 @@ func defaultOptions() *Option {
 
 // ParseFormat validates the given format
 func ParseFormat(format string) (string, error) {
-	if !containString(validFormats, format) {
+	if !generator.ContainString(validFormats, format) {
 		return "", fmt.Errorf("%s is not a valid format", format)
 	}
 	return format, nil
@@ -104,7 +93,7 @@ func ParseFormat(format string) (string, error) {
 
 // ParseType validates the given type
 func ParseType(logType string) (string, error) {
-	if !containString(validTypes, logType) {
+	if !generator.ContainString(validTypes, logType) {
 		return "", fmt.Errorf("%s is not a valid log type", logType)
 	}
 	return logType, nil
