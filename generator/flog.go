@@ -19,6 +19,8 @@ func Generate(option *Option) error {
 
 		interval time.Duration
 		delay    time.Duration
+		writer   io.WriteCloser
+		err      error
 	)
 
 	if option.Delay > 0 {
@@ -30,9 +32,14 @@ func Generate(option *Option) error {
 	}
 
 	logFileName := option.Output
-	writer, err := NewWriter(option.Type, logFileName)
-	if err != nil {
-		return err
+
+	if option.Writer != nil {
+		writer = option.Writer
+	} else {
+		writer, err = NewWriter(option.Type, logFileName)
+		if err != nil {
+			return err
+		}
 	}
 
 	if option.Forever {
@@ -51,7 +58,8 @@ func Generate(option *Option) error {
 			log := NewLog(option.Format, created)
 			_, _ = writer.Write([]byte(log + "\n"))
 
-			if (option.Type != "stdout") && (option.SplitBy > 0) && (line > option.SplitBy*splitCount) {
+			if option.Writer == nil && (option.Type != "stdout") && (option.SplitBy > 0) &&
+				(line > option.SplitBy*splitCount) {
 				_ = writer.Close()
 				fmt.Println(logFileName, "is created.")
 
@@ -71,7 +79,8 @@ func Generate(option *Option) error {
 			_, _ = writer.Write([]byte(log + "\n"))
 
 			bytes += len(log)
-			if (option.Type != "stdout") && (option.SplitBy > 0) && (bytes > option.SplitBy*splitCount+1) {
+			if option.Writer == nil && (option.Type != "stdout") && (option.SplitBy > 0) &&
+				(bytes > option.SplitBy*splitCount+1) {
 				_ = writer.Close()
 				fmt.Println(logFileName, "is created.")
 

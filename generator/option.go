@@ -1,6 +1,9 @@
 package generator
 
-import "time"
+import (
+	"io"
+	"time"
+)
 
 // Option defines log generator options
 type Option struct {
@@ -14,4 +17,5 @@ type Option struct {
 	SplitBy   int
 	Overwrite bool
 	Forever   bool
+	Writer    io.WriteCloser
 }
